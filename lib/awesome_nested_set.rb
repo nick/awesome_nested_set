@@ -445,7 +445,9 @@ module CollectiveIdea
         # declaration.
         def nested_set_scope
           options = {:order => left_column_name}
-          if scope_column = acts_as_nested_set_options[:scope]
+          if acts_as_nested_set_options[:scope].is_a?(Array)
+            options[:conditions] = acts_as_nested_set_options[:scope].inject({}){|m,o| m.merge(o => self[o])}
+          elsif scope_column = acts_as_nested_set_options[:scope]
             options[:conditions] = {scope_column => self[scope_column]}
           end
           Scope.new(self.class.base_class, options)
